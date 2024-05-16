@@ -7,3 +7,14 @@ MAX_TOP_VIDEOS = 7
 
 PROMPT_TEMPLATE = """You are an excellent YouTube content consultant. Below is a list of the videos from a certain channel that had the highest number of viewers in the past year. Based on this list, please provide 10 sets of video title ideas that can attract a large number of viewers for this channel in the future. Write in the same language of the list.
 Here is the list of videos:"""
+
+
+CSS = """
+    <style>
+        header {visibility: hidden;}
+        div[class^='block-container'] { padding-top: 2rem; }
+        h1 {
+        text-align: center;
+        }
+    </style>
+    """

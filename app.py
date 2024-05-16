@@ -1,13 +1,16 @@
+import constants as K
 import streamlit as st
 import logic as f
 import time
 import random
 
 st.set_page_config(
-    page_title="Topic Ideas"
+    page_title = "SmartTube Planner",
 )
-st.title("YouTube Insight")
 
+st.markdown(K.CSS, unsafe_allow_html=True)
+
+st.title("SmartTube Planner")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -32,13 +35,13 @@ if url := st.chat_input("Enter url"):
     top_video_list = f.ask_youtube(url)
     list = []
     for elem in top_video_list:
-        list.append("- " + elem)
-    text = "   ".join(list)
-    print(text)
+        list.append(elem)
+    text = "  \n".join(list)
+    text2 = "### **The most viewed video in the past year**  \n" + text
 
     st.session_state.messages.append({"role": "AI", "content": text})
     with st.chat_message("AI"):
-        st.markdown(text)
+        st.markdown(text2)
 
     full_response = ""
     answer = f.ask_llm(text)

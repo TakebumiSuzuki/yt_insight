@@ -4,10 +4,8 @@ from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 import google.generativeai as genai
-import re
 
 load_dotenv()
-
 
 # YouTube Data APIのサービスオブジェクトを構築
 youtube = build(
@@ -17,17 +15,18 @@ youtube = build(
 )
 
 
-
 def extract_handle(url):
-    # ハンドルの正規表現パターン
-    pattern = r'https://www\.youtube\.com/@([a-zA-Z0-9_]+)'
-    # 正規表現でマッチング
-    match = re.search(pattern, url)
+    # 'youtube.com/'が存在するかを確認
+    youtube_index = url.find('youtube.com/')
+    if youtube_index != -1:
+        url = url[youtube_index + len('youtube.com/'):] # 'youtube.com/'から左側を削除
 
-    if match:
-        return match.group(1)
-    else:
-        return None
+    # 最初の'/'から右側を削除
+    slash_index = url.find('/')
+    if slash_index != -1:
+        url = url[:slash_index]
+
+    return url
 
 
 def get_channel_id(handle):
@@ -120,11 +119,3 @@ def ask_llm(top_video_list):
 
 
 
-
-
-
-# # チャンネルIDの確認方法
-# # 方法1: チャンネルの「概要」ページから確認する
-# # YouTubeチャンネルのホームページに移動します。
-# # 「概要」タブに移動します。
-# # 概要ページのURLにチャンネルIDが含まれています。
