@@ -1,8 +1,13 @@
 import streamlit as st
 import logic as f
+import time
+import random
 
-
+st.set_page_config(
+    page_title="Topic Ideas"
+)
 st.title("YouTube Insight")
+
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -25,41 +30,40 @@ if url := st.chat_input("Enter url"):
 
 
     top_video_list = f.ask_youtube(url)
-    text = "\n".join(top_video_list)
+    list = []
+    for elem in top_video_list:
+        list.append("- " + elem)
+    text = "   ".join(list)
     print(text)
+
     st.session_state.messages.append({"role": "AI", "content": text})
     with st.chat_message("AI"):
         st.markdown(text)
 
-
+    full_response = ""
     answer = f.ask_llm(text)
-    st.session_state.messages.append({"role": "AI", "content": answer})
+
     with st.chat_message("AI"):
-        st.markdown(answer)
+            message_placeholder = st.empty()
+            message_placeholder.markdown("Thinking...")
+            try:
+                for chunk in answer:
+                    word_count = 0
+                    random_int = random.randint(5,10)
+                    for word in chunk.text:
+                        full_response+=word
+                        word_count+=1
+                        if word_count == random_int:
+                            time.sleep(0.05)
+                            message_placeholder.markdown(full_response + "_")
+                            word_count = 0
+                            random_int = random.randint(5,10)
+                message_placeholder.markdown(full_response)
 
+            except Exception as e:
+                st.exception(e)
+            st.session_state.messages.append({"role": "AI", "content": answer})
 
-    # with st.chat_message("assistant"):
-    #     stream = f.ask_llm(text)
-
-    #     response_text = ""
-    #     for chunk in stream:
-    #         if hasattr(chunk, 'result'):
-    #             for candidate in chunk.result.candidates:
-    #                 for part in candidate.content.parts:
-    #                     response_text += part.text
-
-    #     st.write(response_text)
-
-        # stream = client.chat.completions.create(
-        #     model=st.session_state["openai_model"],
-        #     messages=[
-        #         {"role": m["role"], "content": m["content"]}
-        #         for m in st.session_state.messages
-        #     ],
-        #     stream=True,
-        # )
-        # response = st.write_stream(stream)
-    st.session_state.messages.append({"role": "AI", "content": answer})
 
 
 

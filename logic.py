@@ -14,6 +14,7 @@ genai.configure(
 model = genai.GenerativeModel(
     model_name = K.GEMINI_MODEL_NAME
 )
+chat_model = model.start_chat(history = [])
 
 # YouTube Data APIのサービスオブジェクトを構築
 youtube = build(
@@ -76,19 +77,19 @@ def get_top_videos(channel_id, max_results):
     return title_list
 
 
-def get_top_shorts_videos(channel_id, max_results=7):
-    one_year_ago = (datetime.now() - timedelta(days=365)).isoformat("T") + "Z"
+# def get_top_shorts_videos(channel_id, max_results=7):
+#     one_year_ago = (datetime.now() - timedelta(days=365)).isoformat("T") + "Z"
 
-    # search.listを使って、再生回数順に#shortsタグが付いた動画を取得
-    response = youtube.search().list(
-        part='snippet',
-        channelId=channel_id,
-        maxResults=max_results,  # 上位 max_results の結果を取得
-        order='viewCount',
-        q='#shorts',
-        publishedAfter=one_year_ago,
-        type='video'
-    ).execute()
+#     # search.listを使って、再生回数順に#shortsタグが付いた動画を取得
+#     response = youtube.search().list(
+#         part='snippet',
+#         channelId=channel_id,
+#         maxResults=max_results,  # 上位 max_results の結果を取得
+#         order='viewCount',
+#         q='#shorts',
+#         publishedAfter=one_year_ago,
+#         type='video'
+#     ).execute()
 
 
 def ask_youtube(url):
@@ -105,15 +106,16 @@ def ask_youtube(url):
     return top_video_list
 
 
-def ask_llm(top_video_list):
-    prompt = K.PROMPT_TEMPLATE + top_video_list
-    response = model.generate_content(prompt)
-    return response.text
-
 # def ask_llm(top_video_list):
 #     prompt = K.PROMPT_TEMPLATE + top_video_list
-#     response = model.generate_content(prompt, stream = True)
-#     return response
+#     response = model.generate_content(prompt)
+#     return response.text
+
+def ask_llm(top_video_list):
+    prompt = K.PROMPT_TEMPLATE + top_video_list
+    print(prompt)
+    return chat_model.send_message(prompt, stream = True)
+
 
 
 
