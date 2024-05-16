@@ -7,14 +7,7 @@ import google.generativeai as genai
 import re
 
 load_dotenv()
-genai.configure(
-    api_key = os.getenv(K.GEMINI_API_KEY)
-)
 
-model = genai.GenerativeModel(
-    model_name = K.GEMINI_MODEL_NAME
-)
-chat_model = model.start_chat(history = [])
 
 # YouTube Data APIのサービスオブジェクトを構築
 youtube = build(
@@ -112,6 +105,15 @@ def ask_youtube(url):
 #     return response.text
 
 def ask_llm(top_video_list):
+    genai.configure(
+        api_key = os.getenv(K.GEMINI_API_KEY)
+    )
+
+    model = genai.GenerativeModel(
+        model_name = K.GEMINI_MODEL_NAME
+    )
+    chat_model = model.start_chat(history = [])
+
     prompt = K.PROMPT_TEMPLATE + top_video_list
     print(prompt)
     return chat_model.send_message(prompt, stream = True)
