@@ -3,3 +3,5 @@
 
 # .venvディレクトリを無視
 .venv/
+
+__pycache__/

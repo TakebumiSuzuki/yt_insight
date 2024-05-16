@@ -91,8 +91,6 @@ def get_top_shorts_videos(channel_id, max_results=7):
     ).execute()
 
 
-
-
 def ask_youtube(url):
     handle = extract_handle(url)
     if handle is None:
@@ -111,6 +109,13 @@ def ask_llm(top_video_list):
     prompt = K.PROMPT_TEMPLATE + top_video_list
     response = model.generate_content(prompt)
     return response.text
+
+# def ask_llm(top_video_list):
+#     prompt = K.PROMPT_TEMPLATE + top_video_list
+#     response = model.generate_content(prompt, stream = True)
+#     return response
+
+
 
 
 
