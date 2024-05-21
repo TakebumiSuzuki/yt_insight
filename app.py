@@ -35,6 +35,7 @@ if url := st.chat_input("Enter url"):
     top_video_list = f.ask_youtube(url)
     list = []
     for elem in top_video_list:
+        elem = "1. " + elem
         list.append(elem)
     text = "  \n".join(list)
     text2 = "### **The most viewed video in the past year**  \n" + text

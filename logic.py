@@ -103,13 +103,44 @@ def ask_youtube(url):
 #     response = model.generate_content(prompt)
 #     return response.text
 
+safety_settings = [
+    {
+        "category": "HARM_CATEGORY_DANGEROUS",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    },
+]
+
+generation_config = {
+    "temperature" : 0.5,
+    "top_p": 1,
+    "top_k": 1,
+}
+
 def ask_llm(top_video_list):
     genai.configure(
-        api_key = os.getenv(K.GEMINI_API_KEY)
+        api_key = os.getenv(K.GEMINI_API_KEY),
     )
 
     model = genai.GenerativeModel(
-        model_name = K.GEMINI_MODEL_NAME
+        model_name = K.GEMINI_MODEL_NAME,
+        safety_settings = safety_settings,
+        generation_config = generation_config
     )
     chat_model = model.start_chat(history = [])
 
