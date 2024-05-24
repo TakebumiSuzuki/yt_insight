@@ -5,6 +5,15 @@ GEMINI_MODEL_NAME = 'models/gemini-1.5-pro-latest'
 
 MAX_TOP_VIDEOS = 7
 
+TAB_TITLE = 'SmartTube Planner'
+TITLE = 'SmartTube Planner'
+TITLE_TOP7 = '### **The most viewed video in the past year**  \n'
+INPUT_HOLDER = 'Enter YouTube channel url.'
+NOW_PROCESSING = 'Thinking...'
+AI = 'AI'
+# USER = 'USER' 使われていない
+
+
 PROMPT_TEMPLATE = """You are an expert YouTube content consultant. Below is a list of the most viewed videos from a specific channel over the past year. Based on this list, please generate 10 sets of video topic ideas with some title ideas for each idea, in the same language as the provided list, that are likely to attract a large audience for this channel in the future.
 1. Always start with the following line: "### **10 Sets of YouTube Video Ideas Based on Your Popular Videos:**\n"
 2. For all the rest, you have to write your topic ideas and title ideas in exactly the same language as the provided list.
@@ -14,13 +23,10 @@ Here is the list of videos:
 
 CSS = """
     <style>
-        .stChat {
-            width: 90% !important;  /* チャットウィジェットの幅を調整 */
-        }
         header {visibility: hidden;}
         div[class^='block-container'] { padding-top: 2rem; }
         h1 {
-        text-align: center;
+            text-align: center;
         }
     </style>
     """

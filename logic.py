@@ -130,8 +130,6 @@ def ask_llm(top_video_list):
         generation_config = K.GENERATION_CONFIG
     )
 
-    # chat_model = model.start_chat(history = [])
-
     prompt = K.PROMPT_TEMPLATE + top_video_list
     print(prompt)
     return model.generate_content(prompt, stream = True)
