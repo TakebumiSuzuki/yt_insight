@@ -7,19 +7,32 @@ import google.generativeai as genai
 
 load_dotenv()
 
-# YouTube Data APIのサービスオブジェクトを構築
 youtube = build(
     'youtube',
     'v3',
     developerKey = os.getenv(K.YOUTUBE_API_KEY)
 )
 
+def get_id_directly(url):
+    marker = "youtube.com/channel/"
+    index = url.find(marker)
+    if index != -1:
+        # "youtube.com/channel/" の部分以降の文字列を取得
+        url = url[index + len(marker):]
+        # 最初の'/'から右側を削除
+        slash_index = url.find('/')
+        if slash_index != -1:
+            url = url[:slash_index]
+        return url
+    else:
+        return None
+
 
 def extract_handle(url):
-    # 'youtube.com/'が存在するかを確認
-    youtube_index = url.find('youtube.com/')
-    if youtube_index != -1:
-        url = url[youtube_index + len('youtube.com/'):] # 'youtube.com/'から左側を削除
+    marker = "youtube.com/"
+    index = url.find(marker)
+    if index != -1:
+        url = url[index + len(marker):] # 'youtube.com/'から左側を削除
 
     # 最初の'/'から右側を削除
     slash_index = url.find('/')
@@ -85,52 +98,26 @@ def get_top_videos(channel_id, max_results):
 
 
 def ask_youtube(url):
-    handle = extract_handle(url)
-    if handle is None:
-        return 'handle is not included in the url'
+    channel_id = ""
 
-    channel_id = get_channel_id(handle)
+    if "youtube.com/channel/" in url:
+        channel_id = get_id_directly(url)
+
+    else:
+        handle = extract_handle(url)
+        if handle is None:
+            return 'handle is not included in the url'
+
+        channel_id = get_channel_id(handle)
+
     if channel_id is None:
         return 'Channel id was not found'
 
     top_video_list = get_top_videos(channel_id, K.MAX_TOP_VIDEOS)
-    print(top_video_list)
+
     return top_video_list
 
 
-# def ask_llm(top_video_list):
-#     prompt = K.PROMPT_TEMPLATE + top_video_list
-#     response = model.generate_content(prompt)
-#     return response.text
-
-safety_settings = [
-    {
-        "category": "HARM_CATEGORY_DANGEROUS",
-        "threshold": "BLOCK_NONE",
-    },
-    {
-        "category": "HARM_CATEGORY_HARASSMENT",
-        "threshold": "BLOCK_NONE",
-    },
-    {
-        "category": "HARM_CATEGORY_HATE_SPEECH",
-        "threshold": "BLOCK_NONE",
-    },
-    {
-        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        "threshold": "BLOCK_NONE",
-    },
-    {
-        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-        "threshold": "BLOCK_NONE",
-    },
-]
-
-generation_config = {
-    "temperature" : 0.5,
-    "top_p": 1,
-    "top_k": 1,
-}
 
 def ask_llm(top_video_list):
     genai.configure(
@@ -139,14 +126,19 @@ def ask_llm(top_video_list):
 
     model = genai.GenerativeModel(
         model_name = K.GEMINI_MODEL_NAME,
-        safety_settings = safety_settings,
-        generation_config = generation_config
+        safety_settings = K.SAFETY_SETTINGS,
+        generation_config = K.GENERATION_CONFIG
     )
-    chat_model = model.start_chat(history = [])
+
+    # chat_model = model.start_chat(history = [])
 
     prompt = K.PROMPT_TEMPLATE + top_video_list
     print(prompt)
-    return chat_model.send_message(prompt, stream = True)
+    return model.generate_content(prompt, stream = True)
+    # return chat_model.send_message(prompt, stream = True)
+
+def error_handling(e):
+    print(f"エラーが起こっています: {e}")
 
 
 
